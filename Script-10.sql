@@ -179,6 +179,66 @@ VALUES
 (15, 9, 6, 150),
 (15, 5, 9, 270);
 
+ALTER TABLE Stocks
+ADD CONSTRAINT fk_stock_sucursal
+FOREIGN KEY (sucursal_id)
+REFERENCES Sucursales(id);
+
+ALTER TABLE Stocks
+ADD CONSTRAINT fk_stock_producto
+FOREIGN KEY (producto_id)
+REFERENCES Productos(id);
+
+
+ALTER TABLE Ordenes
+ADD CONSTRAINT fk_orden_cliente
+FOREIGN KEY (cliente_id)
+REFERENCES Clientes(id);
+
+ALTER TABLE Ordenes
+ADD CONSTRAINT fk_orden_sucursal
+FOREIGN KEY (sucursal_id)
+REFERENCES Sucursales(id);
+
+ALTER TABLE Items
+ADD CONSTRAINT fk_item_orden
+FOREIGN KEY (orden_id)
+REFERENCES Ordenes(id);
+
+ALTER TABLE Items
+ADD CONSTRAINT fk_item_producto
+FOREIGN KEY (producto_id)
+REFERENCES Productos(id);
+
+
+
+
+SELECT c.nombre AS nombre_categoria, AVG(p.precio_unitario) AS precio_promedio
+FROM Categorías c
+LEFT JOIN Productos p ON c.id = p.categoria_id
+GROUP BY c.nombre
+ORDER BY nombre_categoria;
+
+SELECT c.nombre AS nombre_categoria, SUM(s.cantidad) AS cantidad_total
+FROM Categorías c
+LEFT JOIN Productos p ON c.id = p.categoria_id
+LEFT JOIN Stocks s ON p.id = s.producto_id
+GROUP BY c.nombre
+ORDER BY nombre_categoria;
+
+SELECT s.nombre AS nombre_sucursal, SUM(o.total) AS total_ventas
+FROM Sucursales s
+LEFT JOIN Ordenes o ON s.id = o.sucursal_id
+GROUP BY s.nombre
+ORDER BY nombre_sucursal;
+
+SELECT c.nombre AS nombre_cliente, SUM(o.total) AS total_compras
+FROM Clientes c
+LEFT JOIN Ordenes o ON c.id = o.cliente_id
+GROUP BY c.nombre
+ORDER BY total_compras DESC
+LIMIT 1;
+
 SELECT
     MIN(precio_unitario) AS precio_minimo,
     MAX(precio_unitario) AS precio_maximo,
